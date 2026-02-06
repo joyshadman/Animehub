@@ -11,12 +11,11 @@ const Header = () => {
   const sidebarHandler = useSidebarStore((state) => state.toggleSidebar);
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [value, setValue] = useState("");
-  const [debouncedValue, setDebouncedValue] = useState(""); // For debouncing
+  const [debouncedValue, setDebouncedValue] = useState("");
   const timeoutRef = useRef(null);
 
   const navigate = useNavigate();
 
-  // Debounce input value
   const changeInput = (e) => {
     const newValue = e.target.value;
     setValue(newValue);
@@ -26,12 +25,11 @@ const Header = () => {
     }
 
     timeoutRef.current = setTimeout(() => {
-      setDebouncedValue(newValue); // Set debounced value after 1 second
+      setDebouncedValue(newValue);
     }, 500);
   };
 
-  // React Query hook with `useApi`
-  const { data, isLoading, isError, error } = useApi(
+  const { data, isLoading } = useApi(
     debouncedValue.length > 2 ? `/suggestion?keyword=${debouncedValue}` : null
   );
 
@@ -45,6 +43,7 @@ const Header = () => {
     navigate(`/anime/${id}`);
     resetSearch();
   };
+
   const resetSearch = () => {
     setValue("");
     setDebouncedValue("");
@@ -53,6 +52,7 @@ const Header = () => {
       clearTimeout(timeoutRef.current);
     }
   };
+
   const emptyInput = () => {
     setValue("");
     setDebouncedValue("");
@@ -60,10 +60,11 @@ const Header = () => {
       clearTimeout(timeoutRef.current);
     }
   };
+
   return (
     <div className="relative z-[100]">
-      <div className="fixed bg-card w-full  py-2">
-        <div className="flex gap-2 px-5 md:px-10 md:gap-5 justify-between items-center">
+      <div className="fixed w-full py-2 bg-black/30 backdrop-blur-md">
+        <div className="flex mt-2 gap-2 px-5 md:px-10 md:gap-5 justify-between items-center">
           <div className="left flex gap-2 md:gap-5 items-center">
             <div className="menu" onClick={sidebarHandler}>
               <h1 className="cursor-pointer">
@@ -72,7 +73,23 @@ const Header = () => {
             </div>
             <Logo />
           </div>
-          <div className="right justify-end lg:basis-[40%] flex gap-2 md:gap-5 items-center">
+          <div className="mr-20 center hidden sm:flex gap-3 md:gap-6 items-center flex-1 justify-center px-4">
+            {[
+              { name: "Home", link: "/home" },
+              { name: "Most Popular", link: "/animes/most-popular" },
+              { name: "Recently Updated", link: "/animes/recently-updated" },
+              { name: "Top Airing", link: "/animes/top-airing" },
+            ].map((item) => (
+              <button
+                key={item.link}
+                onClick={() => navigate(item.link)}
+                className="text-sm md:text-base hover:text-primary transition whitespace-nowrap"
+              >
+                {item.name}
+              </button>
+            ))}
+          </div>
+          <div className="right justify-end flex gap-2 md:gap-5 items-center">
             <button
               className="text-xl"
               onClick={() => setShowSearchBar(!showSearchBar)}
@@ -143,7 +160,7 @@ const Header = () => {
                 className="py-2 flex justify-center items-center gap-2 bg-primary text-black"
                 onClick={handleSubmit}
               >
-                <span className="text-lg font-bold">view More</span>{" "}
+                <span className="text-lg font-bold">view More</span>
                 <FaArrowCircleRight />
               </button>
             </>

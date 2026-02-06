@@ -2,8 +2,8 @@ import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
 import config from "../config/config";
 
-export const API_BASE_URL =
-  import.meta.env.DEV ? config.localUrl : config.serverUrl || config.localUrl;
+// Always use the deployed Render API (config.serverUrl) for all environments
+export const API_BASE_URL = config.serverUrl;
 
 const fetchData = async (url) => {
   try {

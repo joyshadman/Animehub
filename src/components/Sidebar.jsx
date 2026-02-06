@@ -36,10 +36,10 @@ const Sidebar = () => {
 
   return (
     <div
-      className={`sidebar transition-all fixed overflow-scroll h-full z-[100] inset-0 w-64 md:w-80  bg-[rgba(255,255,255,.1);] ${
-        isSidebarOpen ? "translate-x-0" : "translate-x-[-100%]"
-      }`}
+      className={`sidebar transition-all fixed overflow-scroll h-full z-[100] inset-0 w-64 md:w-80 bg-black/30  backdrop-blur-md ${isSidebarOpen ? "translate-x-0" : "translate-x-[-100%]"
+        }`}
     >
+
       <button
         className="w-full pt-4 pl-2 flex items-center gap-2 hover:text-primary text-base md:text-xl"
         onClick={sidebarHandler}
