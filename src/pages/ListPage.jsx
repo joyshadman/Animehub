@@ -39,7 +39,18 @@ const ListPage = () => {
     return <PageNotFound />;
   }
 
-  const endpoint = `/animes/${category}${query ? `/${query}` : ""}?page=`;
+  const endpoint = (() => {
+    if (category === "az-list") {
+      return `/az-list/${query ?? "All"}?page=`;
+    }
+    if (category === "genre") {
+      return `/genre/${query}?page=`;
+    }
+    if (category === "producer") {
+      return `/producer/${query}?page=`;
+    }
+    return `/${category}?page=`;
+  })();
   const { data, isError, error, isLoading, hasNextPage, fetchNextPage } =
     useInfiniteApi(endpoint);
 

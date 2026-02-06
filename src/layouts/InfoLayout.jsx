@@ -148,33 +148,40 @@ const InfoLayout = ({ data, showBigPoster }) => {
               </div>
             </div>
             <div className="lightBorder"></div>
-            {data.studios && (
+            {Array.isArray(data.studios) && data.studios.length > 0 && (
               <>
                 <div className="studio">
                   <span>Studio : </span>
-                  <Link
-                    to={`/producer/${data.studios
-                      .toLowerCase()
-                      .replace(" ", "-")}`}
-                  >
-                    <span className="text-primary">{data.studios}</span>
-                  </Link>
+                  <ul className="flex flex-wrap gap-2">
+                    {data.studios.map((studio, index) => (
+                      <li key={studio + index}>
+                        <Link
+                          to={`/animes/producer/${studio}`}
+                          className="hover:opacity-[0.7]"
+                        >
+                          <span className="text-primary">
+                            {studio.replace(/-/g, " ")}
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
                 <div className="lightBorder"></div>
               </>
             )}
             <div className="studio">
               <h4 className="text-center mb-2">Producers</h4>
-              {data.producers && (
+              {Array.isArray(data.producers) && data.producers.length > 0 && (
                 <ul className="flex flex-wrap gap-2">
                   {data.producers.map((producer, index) => (
                     <Link
-                      to={`/producer/${producer}`}
+                      to={`/animes/producer/${producer}`}
                       key={producer}
                       className="hover:opacity-[0.7]"
                     >
                       <li style={{ color: colors[index % colors.length] }}>
-                        {producer}
+                        {producer.replace(/-/g, " ")}
                       </li>
                     </Link>
                   ))}

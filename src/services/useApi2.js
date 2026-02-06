@@ -2,13 +2,13 @@ import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import config from '../config/config'
 
-const API_BASE_URL = config.serverUrl2
+const API_BASE_URL = config.serverUrl || config.localUrl
 const fetchData2 = async (url) => {
   try {
     const { data } = await axios.get(API_BASE_URL + url)
     return data
   } catch (error) {
-    throw new Error(error)
+    throw error
   }
 }
 
