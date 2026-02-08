@@ -54,4 +54,4 @@ Works seamlessly across desktop, tablet, and mobile devices.
 ### 📥 Clone the Project
 
 ```bash
-git clone https://github.com/yourusername/joynime.git
+https://github.com/joyshadman/Animehub.git
