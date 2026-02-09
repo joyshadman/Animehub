@@ -1,4 +1,5 @@
-import { Link, useParams } from "react-router-dom";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useParams } from "react-router-dom";
 import PageNotFound from "./PageNotFound";
 import { useApi } from "../services/useApi";
 import Loader from "../components/Loader";
@@ -9,13 +10,18 @@ import MoreSeasons from "../layouts/MoreSeasons";
 import Related from "../layouts/Related";
 import Footer from "../components/Footer";
 import { Helmet } from "react-helmet";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaWindowClose } from "react-icons/fa";
 import VoiceActorsLayout from "../layouts/VoiceActorsLayout";
 
 const DetailPage = () => {
   const { id } = useParams();
   const [bigPoster, setBigPoster] = useState(null);
+
+  // 1. Reset scroll to top when ID changes (important for related anime clicks)
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [id]);
 
   const titleId = id.split("-").slice(0, -1).join(" ").replace(",", " ");
 
@@ -30,7 +36,7 @@ const DetailPage = () => {
     setBigPoster(url);
   };
 
-  const { data: response, isError, error, isLoading } = useApi(`/anime/${id}`);
+  const { data: response, isError, isLoading } = useApi(`/anime/${id}`);
   const data = response?.data;
 
   if (isError) {
@@ -38,39 +44,51 @@ const DetailPage = () => {
   }
 
   return (
-    <main className={`${bigPoster ? "h-dvh  overflow-hidden" : ""}`}>
+    <main className={`relative min-h-screen bg-[#050505] ${bigPoster ? "h-screen overflow-hidden" : ""}`}>
+      
+      {/* 🖼️ BIG POSTER MODAL */}
       {bigPoster && (
-        <div className="bigposter absolute flex justify-center items-center h-full w-full z-[100] bg-[#222831b4]">
-          <div className="poster bg-lightbg rounded-md flex aspect-auto object-cover flex-col items-end relative">
+        <div className="fixed inset-0 flex justify-center items-center z-[200] bg-black/90 backdrop-blur-md p-4">
+          <div className="relative max-w-full max-h-full group">
             <button
               onClick={() => setBigPoster(null)}
-              className="absolute hover:text-primary bg-black text-2xl"
+              className="absolute -top-10 right-0 text-white hover:text-primary transition-colors flex items-center gap-2 font-bold uppercase text-xs"
             >
-              <FaWindowClose />
+              <span>Close</span>
+              <FaWindowClose size={24} />
             </button>
             <img
               src={bigPoster}
-              alt="poster"
-              className="rounded-md h-full w-full"
+              alt="big poster"
+              className="rounded-lg shadow-2xl max-h-[85vh] w-auto border border-white/10"
             />
           </div>
         </div>
       )}
 
       <Helmet>
-        <title>{titleId}</title>
-        <meta property="og:title" content="detail - Joynime" />
+        <title>{titleId.toUpperCase()} | JoyNime</title>
+        <meta property="og:title" content={`${titleId} - JoyNime`} />
       </Helmet>
+
       {data && !isLoading ? (
-        <div className={`DetailPage relative pt-10 ${bigPoster && "blur-sm"} `}>
+        <div className={`DetailPage transition-all duration-500 ${bigPoster ? "blur-xl scale-95" : "blur-0 scale-100"}`}>
+          
+          {/* TOP INFO SECTION */}
           <InfoLayout showBigPoster={showBigPoster} data={data} />
 
-          <div className="row grid items-start gap-3 px-2 grid-cols-12">
-            <div className="left col-span-12 xl:col-span-9">
-              {data.moreSeasons.length !== 0 && (
+          <div className="max-w-[1600px] mx-auto grid grid-cols-12 gap-8 px-4 md:px-8 py-10">
+            
+            {/* ⬅️ LEFT CONTENT: Seasons, VAs, Recommendations */}
+            <div className="col-span-12 xl:col-span-9 space-y-12">
+              {data.moreSeasons && data.moreSeasons.length !== 0 && (
                 <MoreSeasons data={data.moreSeasons} />
               )}
-              <VoiceActorsLayout id={id} />
+              
+              <div className="bg-white/[0.02] rounded-3xl p-1 border border-white/5">
+                <VoiceActorsLayout id={id} />
+              </div>
+
               {data.recommended && (
                 <div className="recomendation">
                   <Recommended data={data.recommended} />
@@ -78,23 +96,28 @@ const DetailPage = () => {
               )}
             </div>
 
-            <div className="right col-span-12 xl:col-span-3">
-              {data.related.length !== 0 && (
-                <div className="related mt-5">
-                  <Related data={data.related} />
-                </div>
-              )}
-              {data.mostPopular && (
-                <div className="most-popular col-span-12 mt-2 xl:col-span-3">
-                  <MostPopular data={data.mostPopular} />
-                </div>
-              )}
-            </div>
+            {/* ➡️ RIGHT CONTENT: Related & Popular (Sticky) */}
+            <aside className="col-span-12 xl:col-span-3">
+              <div className="sticky top-24 space-y-10">
+                {data.related && data.related.length !== 0 && (
+                  <div className="related">
+                    <Related data={data.related} />
+                  </div>
+                )}
+                
+                {data.mostPopular && (
+                  <div className="most-popular">
+                    <MostPopular data={data.mostPopular} />
+                  </div>
+                )}
+              </div>
+            </aside>
           </div>
         </div>
       ) : (
         <Loader className="h-[100dvh]" />
       )}
+
       <Footer />
     </main>
   );

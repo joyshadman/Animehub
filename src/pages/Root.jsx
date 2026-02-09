@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { FaArrowCircleRight, FaSearch } from "react-icons/fa";
 import banner from "../assets/homeBanner.png";
 import background from "../assets/background.jpg";
@@ -8,69 +9,80 @@ import Logo from "../components/Logo";
 
 const Root = () => {
   const [value, setValue] = useState("");
-
   const navigate = useNavigate();
 
-  const changeInput = (e) => {
-    setValue(e.target.value);
-  };
   const handleSubmit = (e) => {
     e.preventDefault();
-    navigate(`/search?keyword=${value}`);
+    if (value.trim()) {
+      navigate(`/search?keyword=${value}`);
+    }
   };
+
   return (
-    <div className="h-[100dvh] bg-black">
-      <div className=" bg-black">
-        <Navbar />
-        <div
-          className="box relative py-3 px-2 md:p-5 mt-4 bg-black rounded-lg bg-cover bg-center"
-          style={{ backgroundImage: `url(${background})` }}
-        >
-          <div className="box-content relative">
-            <div className="flex justify-center items-center">
-              {/* <img className="h-8 md:h-10 w-auto" src={logo} alt="logo" /> */}
+    <div className="min-h-screen bg-black overflow-hidden">
+      <Navbar />
+      
+      {/* 🌌 MAIN HERO WRAPPER */}
+      <div 
+        className="relative min-h-[calc(100vh-80px)] flex items-center justify-center bg-cover bg-center transition-all duration-500"
+        style={{ backgroundImage: `url(${background})` }}
+      >
+        {/* Dark overlay for better readability */}
+        <div className="absolute inset-0 bg-black/70 backdrop-blur-[2px]"></div>
+
+        <div className="relative z-10 w-full max-w-[1200px] px-4 py-10">
+          
+          {/* 🏷️ LOGO SECTION */}
+          <div className="flex justify-center mb-8 animate-fade-in">
+            <div className="scale-125 md:scale-150">
               <Logo />
             </div>
-            <div className="searchBox mt-5">
-              <form
-                onSubmit={handleSubmit}
-                action={`/search?keyword=${value}`}
-                className="flex h-10 justify-center items-center"
-              >
-                <input
-                  value={value}
-                  onChange={changeInput}
-                  type="text"
-                  placeholder="search anime..."
-                  className="w-full text-lg md:w-1/2 px-3 bg-white text-black input h-full"
-                />
-                <button
-                  type="submit"
-                  className="px-3 bg-primary text-black btn w-11  h-full"
-                >
-                  <FaSearch />
-                </button>
-              </form>
-              <div className="banner flex justify-center items-center">
-                <img
-                  className="banner-img h-auto w-[400px]"
-                  src={banner}
-                  alt="banner"
-                />
-              </div>
-              <div className="explore w-full flex justify-center items-center mt-5 ">
-                <Link
-                  to="/home"
-                  className="font-bold bg-primary px-4 py-2 rounded-xl w-full md:w-1/2"
-                >
-                  <h1 className="flex text-black font-extrabold justify-center items-center gap-2 text-base">
-                    <p> Explore Animes</p>
-                    <FaArrowCircleRight />
-                  </h1>
-                </Link>
-              </div>
-            </div>
           </div>
+
+          {/* 🔍 SEARCH BOX */}
+          <div className="max-w-2xl mx-auto mb-10">
+            <form
+              onSubmit={handleSubmit}
+              className="flex h-12 md:h-14 items-center group"
+            >
+              <input
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                type="text"
+                placeholder="Search anime..."
+                className="w-full h-full px-6 bg-white rounded-l-2xl text-black outline-none text-lg placeholder:text-gray-400 focus:ring-2 focus:ring-primary/50 transition-all"
+              />
+              <button
+                type="submit"
+                className="h-full px-6 bg-primary text-black rounded-r-2xl hover:bg-primary/90 transition-colors flex items-center justify-center"
+              >
+                <FaSearch size={20} />
+              </button>
+            </form>
+          </div>
+
+          {/* 🎨 CENTER BANNER IMAGE */}
+          <div className="flex justify-center mb-10">
+            <img
+              className="w-full max-w-[350px] md:max-w-[450px] h-auto drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-bounce-slow"
+              src={banner}
+              alt="anime character banner"
+            />
+          </div>
+
+          {/* 🚀 EXPLORE BUTTON */}
+          <div className="flex justify-center">
+            <Link
+              to="/home"
+              className="group relative inline-flex items-center justify-center gap-3 bg-primary px-8 py-4 rounded-2xl overflow-hidden transition-all hover:scale-105 active:scale-95 shadow-xl shadow-primary/20"
+            >
+              <span className="text-black font-black text-lg uppercase tracking-wider">
+                Explore Animes
+              </span>
+              <FaArrowCircleRight className="text-black text-xl group-hover:translate-x-1 transition-transform" />
+            </Link>
+          </div>
+
         </div>
       </div>
     </div>

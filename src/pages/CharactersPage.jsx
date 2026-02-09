@@ -1,91 +1,118 @@
-import React, { useEffect } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React from "react";
 import { Link, useParams } from "react-router-dom";
 import { useInfiniteApi } from "../services/useApi";
 import Loader from "../components/Loader";
 import Footer from "../components/Footer";
 import Heading from "../components/Heading";
-import Pagination from "../components/Pagination";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { Helmet } from "react-helmet";
 
 const CharactersPage = () => {
   const { id } = useParams();
 
-  const { data, isError, error, isLoading, hasNextPage, fetchNextPage } =
+  const { data, isError, isLoading, hasNextPage, fetchNextPage } =
     useInfiniteApi(`/characters/${id}?page=`);
 
   const pages = data?.pages;
+  const allItems = pages?.flatMap((page) => page.data.response) || [];
+
+  if (isError) {
+    return (
+      <div className="h-screen flex items-center justify-center text-white/50">
+        Failed to load characters. Please try again later.
+      </div>
+    );
+  }
+
   return (
     <>
-      <main className="pt-14 pb-5 mx-auto max-w-[800px]">
+      <Helmet>
+        <title>Characters & Voice Actors | JoyNime</title>
+      </Helmet>
+
+      <main className="pt-20 pb-10 mx-auto max-w-[900px] px-4">
         {pages && !isLoading ? (
           <>
-            <Heading>charcters and voice actors</Heading>
-            <div className="grid mb-4 mx-1 mt-2 grid-cols-12 gap-2">
-              {pages?.map((page, pageIndex) => (
-                <React.Fragment key={pageIndex}>
-                  {page.data.response.map((item) => (
-                    <div
-                      key={item.id}
-                      className="wrapper flex px-1 py-3 rounded-sm items-center justify-between bg-lightbg col-span-12 "
-                    >
-                      <div className="left gap-2 flex items-center">
-                        <Link to={`/${item.id.replace(":", "/")}`}>
-                          <div className="poster size-9 overflow-hidden rounded-[50%]">
+            <div className="mb-8 border-l-4 border-primary pl-4">
+              <Heading>Characters & Voice Actors</Heading>
+              <p className="text-white/40 text-sm mt-1">Full cast and staff information</p>
+            </div>
+
+            <InfiniteScroll
+              dataLength={allItems.length}
+              next={fetchNextPage}
+              hasMore={hasNextPage}
+              loader={<div className="py-10"><Loader className="h-fit" /></div>}
+              className="space-y-3"
+            >
+              {allItems.map((item, index) => (
+                <div
+                  key={`${item.id}-${index}`}
+                  className="group flex items-center justify-between bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 rounded-xl overflow-hidden transition-all duration-300"
+                >
+                  {/* 🎭 LEFT: CHARACTER INFO */}
+                  <div className="flex items-center gap-4 flex-1 p-2">
+                    <Link to={`/${item.id.replace(":", "/")}`} className="shrink-0">
+                      <div className="size-14 md:size-16 overflow-hidden rounded-lg border border-white/10 group-hover:border-primary/50 transition-colors">
+                        <img
+                          className="h-full w-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                          src={item.imageUrl}
+                          alt={item.name}
+                        />
+                      </div>
+                    </Link>
+                    <div className="flex flex-col">
+                      <Link to={`/${item.id.replace(":", "/")}`}>
+                        <h4 className="text-sm md:text-base font-bold text-white group-hover:text-primary transition-colors">
+                          {item.name}
+                        </h4>
+                      </Link>
+                      <span className="text-xs text-white/40 font-medium uppercase tracking-wider">
+                        {item.role}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* 🎙️ RIGHT: VOICE ACTORS */}
+                  <div className="flex items-center gap-4 flex-1 justify-end p-2 bg-white/[0.02]">
+                    <div className="flex flex-col text-right hidden sm:flex">
+                      {item.voiceActors.map((actor) => (
+                        <Link key={actor.id} to={`/${actor.id.replace(":", "/")}`}>
+                          <h4 className="text-sm font-medium text-white/80 hover:text-primary transition-colors">
+                            {actor.name}
+                          </h4>
+                          <span className="text-[10px] text-white/30 uppercase">Japanese</span>
+                        </Link>
+                      ))}
+                    </div>
+                    
+                    <div className="flex -space-x-2">
+                      {item.voiceActors.map((actor) => (
+                        <Link 
+                          key={actor.id} 
+                          to={`/${actor.id.replace(":", "/")}`}
+                          title={actor.name}
+                        >
+                          <div className="size-14 md:size-16 rounded-lg overflow-hidden border-2 border-[#050505] shadow-xl">
                             <img
+                              loading="lazy"
                               className="h-full w-full object-cover"
-                              src={item.imageUrl}
-                              alt={item.name}
+                              src={actor.imageUrl}
+                              alt={actor.name}
                             />
                           </div>
                         </Link>
-                        <div className="flex flex-col">
-                          <Link to={`/${item.id.replaceAll(":", "/")}`}>
-                            <h4 className="text-xs hover:text-primary">
-                              {item.name}
-                            </h4>
-                          </Link>
-                          <span className="text-xs text-lighttext">
-                            {item.role}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="right flex items-center gap-2">
-                        {item.voiceActors.length !== 0 &&
-                          item.voiceActors.map((actor) => (
-                            <React.Fragment key={actor.id}>
-                              <Link to={`/${actor.id.replace(":", "/")}`}>
-                                <div
-                                  title={actor.name}
-                                  className="poster size-9 rounded-[50%] overflow-hidden"
-                                >
-                                  <img
-                                    loading="lazy"
-                                    className="h-full w-full object-center  object-cover"
-                                    src={actor.imageUrl}
-                                    alt={actor.name}
-                                  />
-                                </div>
-                              </Link>
-                            </React.Fragment>
-                          ))}
-                      </div>
+                      ))}
                     </div>
-                  ))}
-                </React.Fragment>
+                  </div>
+                </div>
               ))}
-            </div>
-            {hasNextPage && (
-              <button
-                onClick={fetchNextPage}
-                className="bg-lightbg mx-auto py-3 w-full hover:text-primary"
-              >
-                Load More
-              </button>
-            )}
+            </InfiniteScroll>
           </>
         ) : (
           <Loader className="h-[100dvh]" />
         )}
-        {/* <Pagination /> */}
       </main>
       <Footer />
     </>
