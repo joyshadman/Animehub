@@ -1,38 +1,57 @@
-# Watanuki
+# 🎬 Joynime
 
-
-**Watanuki** is a modern, sleek anime streaming web application built with **React** and styled using **Tailwind CSS**. The app is designed to provide anime enthusiasts with a seamless and enjoyable streaming experience.
-
----
-
-## Features
-
-- 🌟 **Beautiful UI**: Minimalistic and responsive design powered by Tailwind CSS.
-- 🔍 **Search & Discover**: Find your favorite anime with ease.
-- 🎥 **Stream Anime**: High-quality streaming for your favorite shows.
-- 📋 **Watchlist**: Keep track of the anime you want to watch later.
-- 🌙 **Dark Mode**: Enjoy a stunning dark theme for late-night binging.
-- 📱 **Responsive Design**: Optimized for both desktop and mobile devices.
+**Joynime** is a fast, modern anime streaming web application built using **React** and styled with **Tailwind CSS**.  
+It focuses on smooth browsing, clean UI, and a distraction-free anime watching experience for modern users.
 
 ---
 
-## Demo
+## 📖 Overview
 
-Check out a live demo here: [Watanuki Live Demo](https://watanuki.vercel.app) (Add the link to your deployed app)
-
----
-
-## Tech Stack
-
-- **Frontend**: React
-- **Styling**: Tailwind CSS
-- **State Management**: React Context API / Redux (mention whichever you're using)
-- **API**: Integration with [Anime APIs](https://github.com/yahyaMomin/hianime-API) or other anime databases (if applicable)
+Joynime is designed for anime fans who want speed, simplicity, and beautiful visuals in one place.  
+From discovering new anime to tracking your watch progress — everything is built for comfort and performance.
 
 ---
 
-## Installation
+## ✨ Core Features
 
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/yahyamomin/watanuki.git
+### 🎨 Clean & Modern Interface
+Minimal, smooth design optimized for user experience and readability.
+
+### 🔎 Smart Search & Discovery
+Quickly explore trending anime, new releases, and popular titles.
+
+### ▶️ Smooth Streaming Experience
+Fast-loading video player with intuitive episode navigation.
+
+### 📌 Personal Watchlist
+Save anime and continue watching anytime.
+
+### 🌙 Dark Mode First Design
+Eye-friendly interface ideal for long watching sessions.
+
+### 📱 Fully Responsive Layout
+Works seamlessly across desktop, tablet, and mobile devices.
+
+---
+
+## 🚀 Live Preview
+
+👉 https://animehub-sable.vercel.app/
+
+---
+
+## 🛠 Tech Stack
+
+- **Frontend:** React
+- **Styling:** Tailwind CSS
+- **State Management:** React Context API / Redux Toolkit
+- **API Integration:** Anime streaming APIs / Anime database services
+
+---
+
+## ⚙️ Getting Started
+
+### 📥 Clone the Project
+
+```bash
+https://github.com/joyshadman/Animehub.git
