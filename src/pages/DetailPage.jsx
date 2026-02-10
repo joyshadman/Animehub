@@ -44,7 +44,7 @@ const DetailPage = () => {
   }
 
   return (
-    <main className={`relative min-h-screen bg-[#050505] ${bigPoster ? "h-screen overflow-hidden" : ""}`}>
+    <main className={`relative min-h-screen mt-20 bg-[#050505] ${bigPoster ? "h-screen overflow-hidden" : ""}`}>
       
       {/* 🖼️ BIG POSTER MODAL */}
       {bigPoster && (

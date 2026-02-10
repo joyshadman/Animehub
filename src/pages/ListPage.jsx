@@ -46,7 +46,7 @@ const ListPage = () => {
     : `${category.replace(/-/g, ' ')}`;
 
   return (
-    <div className="list-page pt-20 min-h-screen bg-[#050505]">
+    <div className="list-page pt-20 min-h-screen mt-20 bg-[#050505]">
       <Helmet>
         <title>{displayTitle.toUpperCase()} Anime | AniStorm</title>
       </Helmet>
@@ -67,7 +67,7 @@ const ListPage = () => {
           className="overflow-hidden"
         >
           <div className="max-w-[1600px] mx-auto px-4 mt-10">
-            <header className="mb-10 border-l-4 border-primary pl-6">
+            <header className="mb-10">
               <Heading className="capitalize text-white">
                 {displayTitle} <span className="text-primary">Anime</span>
               </Heading>

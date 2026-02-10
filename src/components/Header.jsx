@@ -1,183 +1,162 @@
-import { useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { FaArrowCircleRight, FaBars, FaSearch } from "react-icons/fa";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useRef, useState, useEffect } from "react";
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "framer-motion";
+import { FaBars, FaSearch } from "react-icons/fa";
 import { FaXmark } from "react-icons/fa6";
-import { useNavigate } from "react-router-dom";
-import { useApi } from "../services/useApi";
+import { useNavigate, useLocation } from "react-router-dom";
 import Logo from "./Logo";
 import useSidebarStore from "../store/sidebarStore";
-import Loader from "./Loader";
 
 const Header = () => {
   const sidebarHandler = useSidebarStore((state) => state.toggleSidebar);
-
   const [showSearch, setShowSearch] = useState(false);
   const [value, setValue] = useState("");
-  const [debouncedValue, setDebouncedValue] = useState("");
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const [hoveredPath, setHoveredPath] = useState(null);
 
-  const timeoutRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const changeInput = (e) => {
-    const newValue = e.target.value;
-    setValue(newValue);
+  // 1. Listen for scroll to toggle transparency
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
 
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize);
+    
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
-    timeoutRef.current = setTimeout(() => {
-      setDebouncedValue(newValue);
-    }, 400);
-  };
+  // 🚀 INSTANT REFRESH: Force transparent state when navigating back to top
+  useEffect(() => {
+    setIsScrolled(window.scrollY > 20);
+  }, [location.pathname]);
 
-  const { data, isLoading } = useApi(
-    debouncedValue.length > 2 ? `/suggestion?keyword=${debouncedValue}` : null
-  );
+  const { scrollY } = useScroll();
+  
+  // Header width and scale transformations
+  const headerWidth = useTransform(scrollY, [0, 200], isMobile ? ["95%", "95%"] : ["90%", "65%"]);
+  const headerScale = useTransform(scrollY, [0, 200], isMobile ? [1, 1] : [1, 0.98]);
+  
+  const smoothWidth = useSpring(headerWidth, { stiffness: 200, damping: 25 });
+  const smoothScale = useSpring(headerScale, { stiffness: 200, damping: 25 });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    navigate(`/search?keyword=${value}`);
-    resetSearch();
-  };
+  const navLinks = [
+    { name: "Home", link: "/home" },
+    { name: "About", link: "/about" },
+    { name: "Most Popular", link: "/animes/most-popular" },
+    { name: "Updated", link: "/animes/recently-updated" },
+  ];
 
   const resetSearch = () => {
     setValue("");
-    setDebouncedValue("");
     setShowSearch(false);
   };
 
-  const navigateToAnimePage = (id) => {
-    navigate(`/anime/${id}`);
-    resetSearch();
-  };
-
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[75%] z-[999]">
-
-      {/* 🔥 Neon Glow Background */}
-      <div className="absolute inset-0 blur-2xl opacity-40 bg-gradient-to-r from-purple-600 via-pink-500 to-blue-500 rounded-full"></div>
-
-      {/* 🧊 Glass Navbar */}
+    <div className="fixed top-4 md:top-6 inset-x-0 z-[999] flex justify-center pointer-events-none">
       <motion.div
-        layout
-        className="relative rounded-full bg-black/30 backdrop-blur-xl border border-white/10 px-6 py-3 shadow-2xl"
+        style={{ width: smoothWidth, scale: smoothScale }}
+        className="relative pointer-events-auto will-change-transform"
       >
-        <div className="flex justify-between items-center">
-
-          {/* Left */}
-          <div className="flex items-center gap-4">
-            <motion.button whileTap={{ scale: 0.9 }} onClick={sidebarHandler}>
-              <FaBars size={22} />
-            </motion.button>
-            <Logo />
-          </div>
-
-          {/* Center Nav */}
-          <div className="hidden md:flex gap-6 mr-20">
-            {[
-              { name: "Home", link: "/home" },
-              { name: "About", link: "/about" },
-              { name: "Most Popular", link: "/animes/most-popular" },
-              { name: "recently updated", link: "/animes/recently-updated" },
-            ].map((item) => (
+        {/* 🧊 GLASS CONTAINER - Pure CSS transitions for background and blur */}
+        <div
+          className={`
+            relative rounded-full border transition-all duration-500 ease-out
+            ${isScrolled 
+              ? "bg-[#0a0a0a]/90 backdrop-blur-2xl border-white/10 py-3 md:py-4 px-5 md:px-8 shadow-2xl" 
+              : "bg-black/10 backdrop-blur-md border-white/5 py-4 md:py-5 px-6 md:px-10"
+            }
+          `}
+        >
+          <div className="flex justify-between items-center relative z-20">
+            <div className="flex items-center gap-3 md:gap-4">
               <motion.button
-                key={item.link}
-                whileHover={{ scale: 1.1 }}
-                onClick={() => navigate(item.link)}
-                className="hover:text-primary transition-colors duration-300 font-bold uppercase text-xs tracking-widest"
+                whileHover={{ scale: 1.1, color: "#ffb700" }}
+                whileTap={{ scale: 0.9 }}
+                onClick={sidebarHandler}
+                className="text-white/80 p-1 md:p-2"
               >
-                {item.name}
+                <FaBars size={20} />
               </motion.button>
-            ))}
+              
+              <div onClick={() => { navigate("/"); resetSearch(); }} className="cursor-pointer">
+                <Logo />
+              </div>
+            </div>
+
+            {/* Nav Links */}
+            <nav className="hidden md:flex items-center gap-1" onMouseLeave={() => setHoveredPath(null)}>
+              {navLinks.map((item) => (
+                <motion.button
+                  key={item.link}
+                  onMouseEnter={() => setHoveredPath(item.link)}
+                  onClick={() => navigate(item.link)}
+                  className={`relative px-4 py-2 text-sm font-black italic uppercase tracking-tighter transition-all duration-300 ${
+                    hoveredPath === item.link || location.pathname === item.link 
+                    ? "text-primary" 
+                    : "text-white/60 hover:text-white"
+                  }`}
+                >
+                  <span className="relative z-10">{item.name}</span>
+                  <AnimatePresence>
+                    {hoveredPath === item.link && (
+                      <motion.div
+                        layoutId="nav-hover-bg"
+                        className="absolute inset-0 bg-white/5 rounded-full -z-0"
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                      />
+                    )}
+                  </AnimatePresence>
+                  {location.pathname === item.link && (
+                    <motion.div 
+                      layoutId="nav-active-line"
+                      className="absolute -bottom-1 left-4 right-4 h-[1.5px] bg-primary rounded-full"
+                    />
+                  )}
+                </motion.button>
+              ))}
+            </nav>
+
+            <div className="flex items-center gap-2">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => setShowSearch(!showSearch)}
+                className={`p-2.5 md:p-3 rounded-full transition-all ${showSearch ? 'bg-primary text-black' : 'text-white/60 hover:text-white'}`}
+              >
+                {showSearch ? <FaXmark size={18} /> : <FaSearch size={18} />}
+              </motion.button>
+            </div>
           </div>
 
-          {/* Search Toggle */}
-          <motion.button
-            whileTap={{ scale: 0.85 }}
-            onClick={() => setShowSearch(!showSearch)}
-          >
-            {showSearch ? <FaXmark /> : <FaSearch />}
-          </motion.button>
-
-        </div>
-
-        {/* 🎬 Netflix Expanding Search */}
-        <AnimatePresence>
-          {showSearch && (
-            <motion.form
-              onSubmit={handleSubmit}
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden"
-            >
-              <motion.input
-                autoFocus
-                value={value}
-                onChange={changeInput}
-                placeholder="Search anime..."
-                initial={{ scale: 0.95 }}
-                animate={{ scale: 1 }}
-                className="mt-4 w-full bg-white/10 px-5 py-3 rounded-2xl border border-white/20 outline-none focus:bg-white/20 transition"
-              />
-            </motion.form>
-          )}
-        </AnimatePresence>
-      </motion.div>
-
-      {/* 🎥 Floating Results Panel */}
-      <AnimatePresence>
-        {showSearch && (
-          <motion.div
-            initial={{ opacity: 0, y: -15 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -15 }}
-            className="mt-4 rounded-2xl overflow-hidden bg-black/80 backdrop-blur-xl border border-white/10 shadow-2xl"
-          >
-            {isLoading ? (
-              <Loader />
-            ) : data?.data?.length ? (
-              <>
-                {data.data.map((item) => (
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    key={item.id}
-                    onClick={() => navigateToAnimePage(item.id)}
-                    className="flex gap-4 px-4 py-4 cursor-pointer hover:bg-white/5"
-                  >
-                    <img
-                      src={item.poster}
-                      className="w-12 h-16 rounded-md object-cover"
-                    />
-                    <div>
-                      <h4>{item.title}</h4>
-                      <p className="text-sm text-gray-400 line-clamp-1">
-                        {item.alternativeTitle}
-                      </p>
-                    </div>
-                  </motion.div>
-                ))}
-
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleSubmit}
-                  className="w-full flex justify-center items-center gap-3 py-4 bg-primary text-black font-bold"
-                >
-                  View More
-                  <FaArrowCircleRight />
-                </motion.button>
-              </>
-            ) : (
-              value.length > 2 && (
-                <h1 className="text-center py-6 text-primary">
-                  anime not found :(
-                </h1>
-              )
+          <AnimatePresence>
+            {showSearch && (
+              <motion.form
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto", marginTop: 12 }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden relative z-10"
+              >
+                <input
+                  autoFocus
+                  value={value}
+                  onChange={(e) => setValue(e.target.value)}
+                  placeholder="Unlock the multi-verse..."
+                  className="w-full bg-white/[0.05] border border-white/10 rounded-2xl px-5 py-3 md:py-4 text-sm md:text-base outline-none focus:border-primary/50 transition-all text-white placeholder:text-white/20"
+                />
+              </motion.form>
             )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
+          </AnimatePresence>
+        </div>
+      </motion.div>
     </div>
   );
 };

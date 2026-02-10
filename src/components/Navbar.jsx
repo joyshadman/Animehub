@@ -9,7 +9,7 @@ const Navbar = () => {
 
   const navLinks = [
     { name: "Home", id: "/home" },
-    { name: "About", id: "/about" }, // Fixed: Changed 'link' to 'id'
+    { name: "About", id: "/about" }, 
     { name: "Movies", id: "/animes/movie" },
     { name: "TV Series", id: "/animes/tv" },
     { name: "Most Popular", id: "/animes/most-popular" },

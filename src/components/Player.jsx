@@ -205,7 +205,7 @@ const Player = ({
       </div>
 
       {/* DESKTOP HINTS */}
-      <div className="hidden md:flex justify-center gap-10 mt-8 opacity-20 hover:opacity-100 transition-opacity duration-500">
+      <div className="hidden md:flex justify-center gap-10 mt-8 mb-8 opacity-20 hover:opacity-100 transition-opacity duration-500">
          <div className="flex items-center gap-2 text-[10px] text-white uppercase font-black tracking-widest">
             <span className="px-2 py-1 rounded bg-white/5 border border-white/10">F</span> Fullscreen
          </div>

@@ -1,17 +1,17 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import LogoImg from "../assets/lgo.png"; // Renamed from Logo to LogoImg
+import LogoImg from "../assets/lgo.png";
 
 const Logo = () => {
   return (
     <Link to="/home" className="group flex items-center space-x-3 no-underline">
-      {/* 🌪️ LOGO IMAGE/ICON WRAPPER */}
-      <div className="relative flex items-center justify-center w-10 h-10">
-        {/* Glow behind the icon */}
+      
+      {/* 🖼️ LOGO IMAGE: Hidden on mobile, Flex on Desktop */}
+      <div className="hidden md:flex relative items-center justify-center w-10 h-10">
         <div className="absolute -inset-1 blur-lg rounded-full group-hover:bg-[#cc00cc]/60 transition-all duration-500" />
         
         <img 
-          src={LogoImg} // Using the renamed variable here
+          src={LogoImg} 
           alt="AniStorm Logo" 
           className="relative w-full h-full object-contain transform group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500"
           onError={(e) => {
@@ -19,7 +19,6 @@ const Logo = () => {
           }}
         />
         
-        {/* Fallback Icon (SVG) */}
         <div className="absolute text-orange-500 group-hover:text-white transition-colors duration-300 pointer-events-none">
            <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 opacity-0 group-hover:opacity-0">
              <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
@@ -27,7 +26,7 @@ const Logo = () => {
         </div>
       </div>
 
-      {/* 🏷️ BRAND NAME */}
+      {/* 📝 ANISTORM TEXT: Always Visible (Mobile & Desktop) */}
       <div className="flex flex-col leading-none">
         <h1 className="relative select-none text-2xl font-[900] italic tracking-tighter flex items-center uppercase">
           <span className="text-white group-hover:text-orange-500 transition-colors duration-300">
@@ -44,7 +43,6 @@ const Logo = () => {
             className="ml-1.5 w-1.5 h-1.5 rounded-full bg-orange-500 shadow-[0_0_10px_#ff9500]"
           />
         </h1>
-        
       </div>
 
       <style>{`
