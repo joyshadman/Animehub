@@ -9,10 +9,10 @@ const Navbar = () => {
 
   const navLinks = [
     { name: "Home", id: "/home" },
+    { name: "About", id: "/about" }, // Fixed: Changed 'link' to 'id'
     { name: "Movies", id: "/animes/movie" },
     { name: "TV Series", id: "/animes/tv" },
     { name: "Most Popular", id: "/animes/most-popular" },
-    { name: "Top Airing", id: "/animes/top-airing" },
   ];
 
   return (
@@ -32,11 +32,11 @@ const Navbar = () => {
                       : "text-white/40 hover:text-white"
                   }`}
                 >
-                  {/* Active Background Pill */}
+                  {/* Active Background Pill - Using #ffb700 */}
                   {isActive && (
                     <motion.div
                       layoutId="navpill"
-                      className="absolute inset-0 bg-primary rounded-full z-[-1]"
+                      className="absolute inset-0 bg-[#ffb700] rounded-full z-[-1]"
                       transition={{ type: "spring", duration: 0.5 }}
                     />
                   )}
@@ -52,9 +52,9 @@ const Navbar = () => {
       <div className="md:hidden w-full px-4 pt-5">
         <button
           onClick={() => setShow(!show)}
-          className="flex items-center gap-2 bg-white/[0.05] border border-white/10 px-4 py-2 rounded-full text-sm font-black uppercase tracking-widest active:scale-95 transition-all"
+          className="flex items-center gap-2 bg-white/[0.05] border border-white/10 px-4 py-2 rounded-full text-sm font-black uppercase tracking-widest active:scale-95 transition-all text-white"
         >
-          {show ? <FaTimes /> : <FaAlignJustify />}
+          {show ? <FaTimes className="text-[#ffb700]" /> : <FaAlignJustify />}
           <span>Menu</span>
         </button>
 
@@ -64,7 +64,7 @@ const Navbar = () => {
               initial={{ opacity: 0, y: -20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
-              className="absolute left-4 right-4 mt-4 flex flex-col items-center bg-[#0a0a0a]/90 backdrop-blur-2xl border border-white/10 rounded-[2rem] py-6 shadow-2xl gap-2"
+              className="absolute left-4 right-4 mt-4 flex flex-col items-center bg-[#0a0a0a]/95 backdrop-blur-2xl border border-white/10 rounded-[2rem] py-6 shadow-2xl gap-2"
             >
               {navLinks.map((item) => {
                 const isActive = location.pathname === item.id;
@@ -74,7 +74,7 @@ const Navbar = () => {
                       onClick={() => setShow(false)}
                       className={`block w-full text-center py-3 rounded-2xl text-base font-black uppercase tracking-tighter transition-all ${
                         isActive
-                          ? "bg-primary text-black"
+                          ? "bg-[#ffb700] text-black"
                           : "text-white/40 hover:bg-white/5"
                       }`}
                       to={item.id}

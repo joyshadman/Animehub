@@ -17,18 +17,19 @@ const Sidebar = () => {
     if (isSidebarOpen) sidebarHandler();
   }, [key]);
 
-  const list = [
+const list = [
     { name: "Home", link: "/home" },
+    { name: "About", link: "/about" }, // Added About Page
     { name: "Subbed Anime", link: "/animes/subbed-anime" },
     { name: "Dubbed Anime", link: "/animes/dubbed-anime" },
     { name: "Most Popular", link: "/animes/most-popular" },
     { name: "Top Airing", link: "/animes/top-airing" },
-    { name: "most favorite", link: "/animes/most-favorite" },
-    { name: "latest completed", link: "/animes/completed" },
-    { name: "recently added", link: "/animes/recently-added" },
-    { name: "recently updated", link: "/animes/recently-updated" },
-    { name: "top upcoming", link: "/animes/top-upcoming" },
-    { name: "A-Z List", link: "/animes/az-list/a" },
+    { name: "Most Favorite", link: "/animes/most-favorite" },
+    { name: "Latest Completed", link: "/animes/completed" },
+    { name: "Recently Added", link: "/animes/recently-added" },
+    { name: "Recently Updated", link: "/animes/recently-updated" },
+    { name: "Top Upcoming", link: "/animes/top-upcoming" },
+    { name: "A-Z List", link: "/animes/az-list" },
     { name: "Movies", link: "/animes/movie" },
     { name: "OVAs", link: "/animes/ova" },
     { name: "ONAs", link: "/animes/ona" },

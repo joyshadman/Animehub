@@ -13,6 +13,7 @@ import PageNotFound from "./pages/PageNotFound";
 import PeopleInfoPage from "./pages/PeopleInfoPage";
 import CharacterInfoPage from "./pages/CharacterInfoPage";
 import CharactersPage from "./pages/CharactersPage";
+import AboutPage from "./pages/AboutPage"; 
 
 const App = () => {
   const isSidebarOpen = useSidebarStore((state) => state.isSidebarOpen);
@@ -34,8 +35,15 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Root />} />
           <Route path="/home" element={<Home />} />
+          <Route path="/about" element={<AboutPage />} /> {/* 2. Added Route */}
           <Route path="/anime/:id" element={<DetailPage />} />
+          
+          {/* This route handles /animes/az-list/A 
+              category = az-list
+              query = A
+          */}
           <Route path="/animes/:category/:query?" element={<ListPage />} />
+          
           <Route path="/search" element={<SearchResult />} />
           <Route path="/watch/:id" element={<WatchPage />} />
           <Route path="/characters/:id" element={<CharactersPage />} />
@@ -47,30 +55,5 @@ const App = () => {
     </>
   );
 };
-
-// pages
-// /
-// /home
-// /:id
-// top-rated
-// most-popular
-// most-favotite
-// completed
-// recently-added
-// recently-updated
-// top-upcoming
-// subbed-anime
-// dubbed-anime
-// movie
-// tv
-// ova
-// ona
-// special
-// events
-// /genre/:genre
-//  /watch/:id?ep=${number}
-//  /character/:id
-//  /people/:id
-// filter
 
 export default App;

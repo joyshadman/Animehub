@@ -23,7 +23,7 @@ const WatchPage = () => {
   const episodes = useMemo(() => epData?.data || [], [epData]);
   const animeInfo = infoData?.data;
 
-  // Title fallback to prevent Helmet errors and UI blank spots
+  // Title fallback
   const cleanTitle = useMemo(() => {
     return animeInfo?.name || id?.replace(/-/g, " ").toUpperCase() || "Loading...";
   }, [animeInfo, id]);
@@ -43,28 +43,18 @@ const WatchPage = () => {
     setSearchParams({ ep: cleanId }, { replace: true });
   };
 
-  /**
-   * IMAGE LOADING FIX:
-   * Wraps the raw URL in a proxy to bypass 403 Forbidden/Hotlink protection.
-   */
   const getPoster = () => {
     const rawUrl = currentEp?.image || 
-                   currentEp?.img || 
-                   animeInfo?.poster || 
-                   animeInfo?.image;
+                    currentEp?.img || 
+                    animeInfo?.poster || 
+                    animeInfo?.image;
     
     if (!rawUrl) {
       return `https://placehold.co/600x400/111/ff9c00?text=${encodeURIComponent(cleanTitle)}`;
     }
-    
-    // Using images.weserv.nl as a proxy to force the image to load
     return `https://images.weserv.nl/?url=${encodeURIComponent(rawUrl)}&w=600&il`;
   };
 
-  /**
-   * DIRECT LOCALSTORAGE LOGIC:
-   * Saves history without using a Zustand store.
-   */
   useEffect(() => {
     if (currentEp && id) {
       const historyItem = {
@@ -72,11 +62,10 @@ const WatchPage = () => {
         episodeId: currentEp.id,
         name: cleanTitle,
         episodeNumber: currentEp.episodeNumber,
-        poster: getPoster(), // Saves the proxied URL
+        poster: getPoster(),
         updatedAt: Date.now()
       };
 
-      // Get existing data
       const existingData = localStorage.getItem("now_playing");
       let historyArray = [];
       
@@ -87,12 +76,8 @@ const WatchPage = () => {
         historyArray = [];
       }
 
-      // Filter out current anime to move it to the top
       const filteredHistory = historyArray.filter(item => item.id !== id);
-      
-      // Update and Limit to 15 items
       const newHistory = [historyItem, ...filteredHistory].slice(0, 15);
-      
       localStorage.setItem("now_playing", JSON.stringify(newHistory));
     }
   }, [currentEp?.id, id, cleanTitle, animeInfo]);
@@ -107,29 +92,36 @@ const WatchPage = () => {
   if (epLoading || !episodes.length) return <Loader className="h-screen" />;
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white pt-24 pb-12 px-4 md:px-8">
+    <div className="min-h-screen bg-[#050505] text-white pt-20 md:pt-24 pb-12 px-2 md:px-8">
       <Helmet>
         <title>{`Watching ${cleanTitle}`}</title>
       </Helmet>
       
-      <div className="max-w-7xl mx-auto space-y-8">
-        <nav className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-black">
-          <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-8 py-4 rounded-full">
-            <Link to="/home" className="text-white/40 hover:text-primary transition-all">HOME</Link>
-            <span className="w-1 h-1 bg-white/20 rounded-full" />
-            <Link to={`/anime/${id}`} className="text-white/80 truncate max-w-[250px]">{cleanTitle}</Link>
+      <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
+        
+        {/* RESPONSIVE BREADCRUMB */}
+        <nav className="flex flex-col sm:flex-row items-start sm:items-center gap-3 text-[10px] uppercase tracking-widest font-black">
+          <div className="flex items-center w-full sm:w-auto gap-2 md:gap-3 bg-white/5 border border-white/10 px-4 md:px-8 py-3 md:py-4 rounded-full overflow-hidden">
+            <Link to="/home" className="text-white/40 hover:text-primary transition-all shrink-0">HOME</Link>
+            <span className="w-1 h-1 bg-white/20 rounded-full shrink-0" />
+            <Link to={`/anime/${id}`} className="text-white/80 truncate max-w-[150px] md:max-w-[250px] hover:text-primary transition-colors">
+              {cleanTitle}
+            </Link>
           </div>
-          <div className="bg-primary text-black px-8 py-4 rounded-full">
+          
+          <div className="bg-primary text-black px-6 md:px-8 py-3 md:py-4 rounded-full flex items-center justify-center self-end sm:self-auto shrink-0 shadow-lg shadow-primary/10">
             EP {currentEp?.episodeNumber || "1"}
           </div>
         </nav>
 
-        <div className="relative group rounded-[3rem] overflow-hidden border border-white/10 bg-black/40">
+        {/* PLAYER CONTAINER */}
+        <div className="relative group rounded-2xl md:rounded-[3rem] overflow-hidden border border-white/10 bg-black/40">
           <Player
             episodeId={currentEp?.id}
             currentEp={currentEp}
             hasNextEp={currentIndex < episodes.length - 1}
             hasPrevEp={currentIndex > 0}
+            animeData={animeInfo} // Passing animeInfo so player has season data
             changeEpisode={(dir) => {
                 const target = episodes[currentIndex + (dir === 'next' ? 1 : -1)];
                 if(target) updateParams(target.id);
@@ -137,17 +129,34 @@ const WatchPage = () => {
           />
         </div>
 
-        <div className="mt-16 space-y-8">
-          <div className="flex items-center justify-between px-4">
-            <h3 className="text-3xl font-black uppercase italic tracking-tighter flex items-center gap-4">
-              <div className="w-2 h-10 bg-primary rounded-full" /> Episodes
+        {/* EPISODES SECTION */}
+        <div className="mt-12 md:mt-16 space-y-6 md:space-y-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 px-2 md:px-4">
+            <h3 className="text-2xl md:text-3xl font-black uppercase italic tracking-tighter flex items-center gap-3 md:gap-4">
+              <div className="w-2 h-8 md:h-10 bg-primary rounded-full" /> Episodes
             </h3>
-            <div className="flex bg-white/5 p-2 rounded-full border border-white/10">
-              <button onClick={() => setLayout("row")} className={`p-4 rounded-full ${layout === "row" ? "bg-white text-black" : "text-white/30"}`}><MdTableRows size={22} /></button>
-              <button onClick={() => setLayout("column")} className={`p-4 rounded-full ${layout === "column" ? "bg-white text-black" : "text-white/30"}`}><HiMiniViewColumns size={22} /></button>
+            
+            <div className="flex bg-white/5 p-1.5 rounded-full border border-white/10 self-end sm:self-auto">
+              <button 
+                onClick={() => setLayout("row")} 
+                className={`p-3 md:p-4 rounded-full transition-all ${layout === "row" ? "bg-white text-black shadow-lg" : "text-white/30 hover:text-white/60"}`}
+              >
+                <MdTableRows size={18} />
+              </button>
+              <button 
+                onClick={() => setLayout("column")} 
+                className={`p-3 md:p-4 rounded-full transition-all ${layout === "column" ? "bg-white text-black shadow-lg" : "text-white/30 hover:text-white/60"}`}
+              >
+                <HiMiniViewColumns size={18} />
+              </button>
             </div>
           </div>
-          <div className={`grid gap-5 p-8 bg-white/[0.02] rounded-[3rem] border border-white/5 ${layout === "row" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-12"}`}>
+
+          <div className={`grid gap-3 md:gap-5 p-4 md:p-8 bg-white/[0.02] rounded-3xl md:rounded-[3rem] border border-white/5 ${
+            layout === "row" 
+              ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" 
+              : "grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-12"
+          }`}>
             {episodes.map((episode) => (
               <Episodes key={episode.id} episode={episode} currentEp={currentEp} layout={layout} />
             ))}

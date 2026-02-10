@@ -75,15 +75,15 @@ const Header = () => {
           <div className="hidden md:flex gap-6 mr-20">
             {[
               { name: "Home", link: "/home" },
+              { name: "About", link: "/about" },
               { name: "Most Popular", link: "/animes/most-popular" },
-              { name: "Top Airing", link: "/animes/top-airing" },
               { name: "recently updated", link: "/animes/recently-updated" },
             ].map((item) => (
               <motion.button
                 key={item.link}
                 whileHover={{ scale: 1.1 }}
                 onClick={() => navigate(item.link)}
-                className="hover:text-primary transition"
+                className="hover:text-primary transition-colors duration-300 font-bold uppercase text-xs tracking-widest"
               >
                 {item.name}
               </motion.button>

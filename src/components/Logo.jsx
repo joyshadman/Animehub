@@ -1,24 +1,50 @@
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import LogoImg from "../assets/lgo.png"; // Renamed from Logo to LogoImg
 
 const Logo = () => {
   return (
-    <Link to="/home" className="group">
-      <div className="flex items-center space-x-2 relative">
-        {/* 🍎 GLOW EFFECT (Hidden by default, glows on hover) */}
-        <div className="absolute -inset-2 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+    <Link to="/home" className="group flex items-center space-x-3 no-underline">
+      {/* 🌪️ LOGO IMAGE/ICON WRAPPER */}
+      <div className="relative flex items-center justify-center w-10 h-10">
+        {/* Glow behind the icon */}
+        <div className="absolute -inset-1 blur-lg rounded-full group-hover:bg-[#cc00cc]/60 transition-all duration-500" />
         
-        <h1 className="relative select-none text-3xl font-black italic tracking-tighter flex items-center">
-          {/* THE LOGO TEXT WITH ANIMATED GRADIENT */}
-          <span className="bg-gradient-to-r from-primary via-[#ffeb3b] to-primary bg-[length:200%_auto] animate-gradient-flow bg-clip-text text-transparent drop-shadow-sm">
-            Joy
+        <img 
+          src={LogoImg} // Using the renamed variable here
+          alt="AniStorm Logo" 
+          className="relative w-full h-full object-contain transform group-hover:scale-110 group-hover:rotate-12 transition-transform duration-500"
+          onError={(e) => {
+            e.target.style.display = 'none';
+          }}
+        />
+        
+        {/* Fallback Icon (SVG) */}
+        <div className="absolute text-orange-500 group-hover:text-white transition-colors duration-300 pointer-events-none">
+           <svg viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 opacity-0 group-hover:opacity-0">
+             <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
+           </svg>
+        </div>
+      </div>
+
+      {/* 🏷️ BRAND NAME */}
+      <div className="flex flex-col leading-none">
+        <h1 className="relative select-none text-2xl font-[900] italic tracking-tighter flex items-center uppercase">
+          <span className="text-white group-hover:text-orange-500 transition-colors duration-300">
+            ANI
           </span>
-          <span className="text-white group-hover:text-primary transition-colors duration-300">
-            Nime
+          
+          <span className="ml-1 bg-gradient-to-r from-orange-500 via-amber-300 to-orange-600 bg-[length:200%_auto] animate-gradient-flow bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(255,149,0,0.3)]">
+            STORM
           </span>
 
-          {/* ⚡ THE "DOT" INDICATOR */}
-          <span className="ml-1 w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+          <motion.span 
+            animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
+            transition={{ repeat: Infinity, duration: 2 }}
+            className="ml-1.5 w-1.5 h-1.5 rounded-full bg-orange-500 shadow-[0_0_10px_#ff9500]"
+          />
         </h1>
+        
       </div>
 
       <style>{`
