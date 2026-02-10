@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from "framer-motion";
 import { FaBars, FaSearch } from "react-icons/fa";
 import { FaXmark } from "react-icons/fa6";
@@ -9,6 +9,7 @@ import useSidebarStore from "../store/sidebarStore";
 
 const Header = () => {
   const sidebarHandler = useSidebarStore((state) => state.toggleSidebar);
+
   const [showSearch, setShowSearch] = useState(false);
   const [value, setValue] = useState("");
   const [isScrolled, setIsScrolled] = useState(false);
@@ -18,35 +19,48 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 1. Listen for scroll to toggle transparency
+  // Scroll + resize
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
     const handleResize = () => setIsMobile(window.innerWidth < 768);
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", handleResize);
-    
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleResize);
     };
   }, []);
 
-  // 🚀 INSTANT REFRESH: Force transparent state when navigating back to top
+  // refresh state on route change
   useEffect(() => {
     setIsScrolled(window.scrollY > 20);
   }, [location.pathname]);
 
   const { scrollY } = useScroll();
-  
-  // Header width and scale transformations
-  const headerWidth = useTransform(scrollY, [0, 200], isMobile ? ["95%", "95%"] : ["90%", "65%"]);
-  const headerScale = useTransform(scrollY, [0, 200], isMobile ? [1, 1] : [1, 0.98]);
-  
-  const smoothWidth = useSpring(headerWidth, { stiffness: 200, damping: 25 });
-  const smoothScale = useSpring(headerScale, { stiffness: 200, damping: 25 });
+
+  const headerWidth = useTransform(
+    scrollY,
+    [0, 200],
+    isMobile ? ["95%", "95%"] : ["90%", "65%"]
+  );
+
+  const headerScale = useTransform(
+    scrollY,
+    [0, 200],
+    isMobile ? [1, 1] : [1, 0.98]
+  );
+
+  const smoothWidth = useSpring(headerWidth, {
+    stiffness: 200,
+    damping: 25,
+  });
+
+  const smoothScale = useSpring(headerScale, {
+    stiffness: 200,
+    damping: 25,
+  });
 
   const navLinks = [
     { name: "Home", link: "/home" },
@@ -66,17 +80,23 @@ const Header = () => {
         style={{ width: smoothWidth, scale: smoothScale }}
         className="relative pointer-events-auto will-change-transform"
       >
-        {/* 🧊 GLASS CONTAINER - Pure CSS transitions for background and blur */}
+        {/* Premium Glass Container */}
         <div
+          style={{
+            backdropFilter: "blur(24px) saturate(160%)",
+            WebkitBackdropFilter: "blur(24px) saturate(160%)",
+          }}
           className={`
-            relative rounded-full border transition-all duration-500 ease-out
-            ${isScrolled 
-              ? "bg-[#0a0a0a]/90 backdrop-blur-2xl border-white/10 py-3 md:py-4 px-5 md:px-8 shadow-2xl" 
-              : "bg-black/10 backdrop-blur-md border-white/5 py-4 md:py-5 px-6 md:px-10"
-            }
+            relative rounded-full border
+            backdrop-blur-2xl bg-[#0a0a0a]/70 border-white/10
+            transition-all duration-500 ease-out
+            ${isScrolled
+              ? "py-3 md:py-4 px-5 md:px-8 shadow-2xl"
+              : "py-4 md:py-5 px-6 md:px-10"}
           `}
         >
           <div className="flex justify-between items-center relative z-20">
+            {/* Left */}
             <div className="flex items-center gap-3 md:gap-4">
               <motion.button
                 whileHover={{ scale: 1.1, color: "#ffb700" }}
@@ -86,37 +106,51 @@ const Header = () => {
               >
                 <FaBars size={20} />
               </motion.button>
-              
-              <div onClick={() => { navigate("/"); resetSearch(); }} className="cursor-pointer">
+
+              <div
+                onClick={() => {
+                  navigate("/");
+                  resetSearch();
+                }}
+                className="cursor-pointer"
+              >
                 <Logo />
               </div>
             </div>
 
-            {/* Nav Links */}
-            <nav className="hidden md:flex items-center gap-1" onMouseLeave={() => setHoveredPath(null)}>
+            {/* Nav */}
+            <nav
+              className="hidden md:flex items-center gap-1"
+              onMouseLeave={() => setHoveredPath(null)}
+            >
               {navLinks.map((item) => (
                 <motion.button
                   key={item.link}
                   onMouseEnter={() => setHoveredPath(item.link)}
                   onClick={() => navigate(item.link)}
                   className={`relative px-4 py-2 text-sm font-black italic uppercase tracking-tighter transition-all duration-300 ${
-                    hoveredPath === item.link || location.pathname === item.link 
-                    ? "text-primary" 
-                    : "text-white/60 hover:text-white"
+                    hoveredPath === item.link ||
+                    location.pathname === item.link
+                      ? "text-primary"
+                      : "text-white/60 hover:text-white"
                   }`}
                 >
                   <span className="relative z-10">{item.name}</span>
+
                   <AnimatePresence>
                     {hoveredPath === item.link && (
                       <motion.div
                         layoutId="nav-hover-bg"
                         className="absolute inset-0 bg-white/5 rounded-full -z-0"
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
                       />
                     )}
                   </AnimatePresence>
+
                   {location.pathname === item.link && (
-                    <motion.div 
+                    <motion.div
                       layoutId="nav-active-line"
                       className="absolute -bottom-1 left-4 right-4 h-[1.5px] bg-primary rounded-full"
                     />
@@ -125,14 +159,23 @@ const Header = () => {
               ))}
             </nav>
 
+            {/* Right */}
             <div className="flex items-center gap-2">
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setShowSearch(!showSearch)}
-                className={`p-2.5 md:p-3 rounded-full transition-all ${showSearch ? 'bg-primary text-black' : 'text-white/60 hover:text-white'}`}
+                className={`p-2.5 md:p-3 rounded-full transition-all ${
+                  showSearch
+                    ? "bg-primary text-black"
+                    : "text-white/60 hover:text-white"
+                }`}
               >
-                {showSearch ? <FaXmark size={18} /> : <FaSearch size={18} />}
+                {showSearch ? (
+                  <FaXmark size={18} />
+                ) : (
+                  <FaSearch size={18} />
+                )}
               </motion.button>
             </div>
           </div>

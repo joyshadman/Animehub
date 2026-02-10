@@ -45,7 +45,7 @@ const Root = () => {
       <div className="fixed inset-0 z-0 pointer-events-none">
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.3 }}
+          animate={{ opacity: 2.3 }}
           transition={{ duration: 2 }}
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${background})` }}
