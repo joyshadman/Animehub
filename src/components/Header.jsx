@@ -109,7 +109,7 @@ const Header = () => {
 
               <div
                 onClick={() => {
-                  navigate("/");
+                  navigate("/home"); // Updated from "/" to "/home"
                   resetSearch();
                 }}
                 className="cursor-pointer"
@@ -187,6 +187,7 @@ const Header = () => {
                 animate={{ opacity: 1, height: "auto", marginTop: 12 }}
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden relative z-10"
+                onSubmit={(e) => e.preventDefault()} // Added to prevent page reload on search submit
               >
                 <input
                   autoFocus
